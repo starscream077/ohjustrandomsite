@@ -1,44 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My First Webpage</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explorer Landing</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            text-align: center;
-            padding: 50px;
-        }
+<style>
+/* ================= RESET ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        h1 {
-            color: #333;
-        }
+body {
+    height: 100vh;
+    overflow: hidden;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    color: white;
+}
 
-        p {
-            color: #555;
-            font-size: 18px;
-        }
+/* ================= BACKGROUND ================= */
+.scene {
+    position: fixed;
+    inset: 0;
+    background-image: url("background.png");
+    background-size: contain;      /* SHOW FULL IMAGE */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #020617;     /* fill empty space */
+    z-index: -4;
+}
 
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
+/* ================= DARK NIGHT OVERLAY ================= */
+.night-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: -3;
+}
+
+/* ================= STARS ================= */
+.stars {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+    from { opacity: 0.2; }
+    to   { opacity: 1; }
+}
+
+/* ================= FOG ================= */
+.fog {
+    position: fixed;
+    width: 200%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 30% 60%, rgba(255,255,255,0.08), transparent 40%),
+        radial-gradient(circle at 70% 70%, rgba(255,255,255,0.06), transparent 45%);
+    animation: fogMove 80s linear infinite;
+    z-index: -1;
+}
+
+@keyframes fogMove {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+/* ================= TITLE ================= */
+h1 {
+    position: relative;
+    margin-top: 20px;
+    text-align: center;
+    font-size: clamp(26px, 5vw, 44px);
+    letter-spacing: 2px;
+    text-shadow: 0 0 12px black;
+    z-index: 5;
+}
+
+/* ================= CAMPFIRE ================= */
+.campfire {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 50px;
+    background: radial-gradient(circle at bottom, orange, red, transparent 70%);
+    filter: blur(1px);
+    animation: fireFlicker 0.15s infinite alternate;
+    z-index: 4;
+}
+
+@keyframes fireFlicker {
+    0% { transform: translateX(-50%) scaleY(1); opacity: 0.8; }
+    100% { transform: translateX(-50%) scaleY(1.2); opacity: 1; }
+}
+
+/* Glow */
+.campfire::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 30px;
+    background: radial-gradient(circle, rgba(255,140,0,0.6), transparent 70%);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .scene {
+        background-size: cover;
+    }
+
+    .campfire {
+        bottom: 15%;
+    }
+}
+</style>
 </head>
 
 <body>
 
-    <h1>Hello, World! 👋</h1>
+<!-- Background Layers -->
+<div class="scene"></div>
+<div class="night-overlay"></div>
+<div class="stars" id="stars"></div>
+<div class="fog"></div>
 
-    <p>
-        Hichu hehe.
-    </p>
+<!-- Title -->
+<h1>Exploration in progress</h1>
 
-    <button onclick="alert('Bichu hehe!')">
-        Click Me
-    </button>
+<!-- Campfire -->
+<div class="campfire"></div>
+
+<script>
+/* ================= CREATE STARS ================= */
+const starsContainer = document.getElementById("stars");
+
+for (let i = 0; i < 120; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 60 + "%";
+    star.style.animationDelay = Math.random() * 2 + "s";
+    starsContainer.appendChild(star);
+}
+</script>
 
 </body>
 </html>
