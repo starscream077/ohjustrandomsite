@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#18231f">
   <meta name="description" content="A quiet place to pause, with peaceful nature scenes that change with the moment.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <title>Still Somewhere — a little room to breathe</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,6 +77,28 @@
 
     .topbar, .centerpiece, .bottom-area { position: relative; z-index: 1; }
 
+    .topbar, .bottom-area {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 350ms ease, visibility 350ms ease;
+    }
+
+    .experience.interface-visible .topbar,
+    .experience.interface-visible .bottom-area {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .centerpiece.intro-dismissed {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      animation: none;
+      transition: opacity 450ms ease, visibility 450ms ease;
+    }
+
     .topbar {
       display: flex;
       align-items: center;
@@ -146,12 +169,14 @@
     .bottom-area { display: grid; gap: 23px; }
 
     .scene-caption {
-      display: flex;
+      display: none;
       align-items: end;
       justify-content: space-between;
       gap: 20px;
       padding: 0 2px;
     }
+
+    .experience.scene-info-visible .scene-caption { display: flex; }
 
     .scene-copy { min-width: 0; }
 
@@ -275,6 +300,11 @@
       white-space: nowrap;
     }
 
+    .action-group { display: flex; align-items: center; gap: 8px; }
+    .scene-info-toggle { flex: 0 0 42px; width: 42px; padding: 0; }
+    .scene-info-toggle .eye-slash { transition: opacity 180ms ease; }
+    .scene-info-toggle[aria-pressed="true"] .eye-slash { opacity: 0; }
+
     .control-action:hover { border-color: rgba(248, 246, 239, 0.68); background: rgba(248, 246, 239, 0.2); }
     .control-action:focus-visible, .auto-toggle:focus-visible, select:focus-visible { outline: 2px solid #d7ddc4; outline-offset: 4px; }
     .control-action svg { width: 15px; height: 15px; }
@@ -304,6 +334,8 @@
       .filter-control label, select, .auto-toggle { font-size: 11px; }
       select { max-width: 125px; }
       .control-action { min-height: 44px; }
+      .action-group { width: 100%; }
+      .action-group #next-scene { flex: 1; }
       .shade { background: linear-gradient(90deg, rgba(9, 18, 17, 0.38), rgba(9, 18, 17, 0.08)), linear-gradient(180deg, rgba(9, 18, 17, 0.31), transparent 24%, rgba(9, 18, 17, 0.08) 43%, rgba(9, 18, 17, 0.68)); }
     }
 
@@ -370,15 +402,39 @@
             <span>Auto change</span>
           </button>
         </div>
-        <button class="control-action" id="next-scene" type="button">
-          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16.3 6.4A6.7 6.7 0 1 0 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M13 3.5h3.7v3.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Find another view</span>
-        </button>
+        <div class="action-group">
+          <button class="control-action scene-info-toggle" id="scene-info-toggle" type="button" aria-label="Toggle scene description" title="Toggle scene description" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5"/><path class="eye-slash" d="m4 4 16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+          <button class="control-action" id="next-scene" type="button">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16.3 6.4A6.7 6.7 0 1 0 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M13 3.5h3.7v3.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Find another view</span>
+          </button>
+        </div>
       </div>
     </section>
   </main>
 
   <script>
+    const experience = document.querySelector(".experience");
+    const intro = document.querySelector(".centerpiece");
+    const sceneInfoToggle = document.querySelector("#scene-info-toggle");
+    let interfaceTimer;
+
+    function revealInterface() {
+      experience.classList.add("interface-visible");
+      clearTimeout(interfaceTimer);
+      interfaceTimer = setTimeout(() => {
+        experience.classList.remove("interface-visible");
+        experience.classList.remove("scene-info-visible");
+        sceneInfoToggle.setAttribute("aria-pressed", "false");
+      }, 6000);
+    }
+
+    document.addEventListener("pointerdown", revealInterface);
+    document.addEventListener("keydown", revealInterface);
+    setTimeout(() => intro.classList.add("intro-dismissed"), 3500);
+
     const scenes = [
       { category: "night", label: "Night sky", title: "Beneath a sky full of stars", description: "A quiet mountain night, lit by a thousand distant worlds.", photo: "photo-1519681393784-d120267933ba" },
       { category: "night", label: "Night sky", title: "Where the Milky Way begins", description: "A ribbon of light stretching across the stillness.", photo: "photo-1534796636912-3b95b3ab5986" },
@@ -443,6 +499,11 @@
 
     document.querySelector("#next-scene").addEventListener("click", showRandomScene);
     filter.addEventListener("change", showRandomScene);
+    sceneInfoToggle.addEventListener("click", () => {
+      const isVisible = sceneInfoToggle.getAttribute("aria-pressed") !== "true";
+      sceneInfoToggle.setAttribute("aria-pressed", String(isVisible));
+      experience.classList.toggle("scene-info-visible", isVisible);
+    });
     autoToggle.addEventListener("click", () => {
       autoChange = !autoChange;
       autoToggle.setAttribute("aria-pressed", String(autoChange));
