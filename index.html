@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#18231f">
+  <meta name="description" content="A quiet place to pause, with peaceful nature scenes that change with the moment.">
+  <title>Still Somewhere — a little room to breathe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f8f6ef;
+      --mist: rgba(248, 246, 239, 0.72);
+      --line: rgba(248, 246, 239, 0.24);
+      --glass: rgba(14, 23, 21, 0.34);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      background: #18231f;
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, select { font: inherit; }
+
+    .experience {
+      position: relative;
+      display: flex;
+      min-height: 100vh;
+      min-height: 100svh;
+      flex-direction: column;
+      justify-content: space-between;
+      isolation: isolate;
+      overflow: hidden;
+      padding: 32px clamp(22px, 5.4vw, 84px) 35px;
+    }
+
+    .landscape, .shade {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+    }
+
+    .landscape { overflow: hidden; background: #233832; }
+
+    .landscape img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      inset: 0;
+      object-fit: cover;
+      object-position: center 54%;
+      opacity: 0;
+      transform: scale(1.025);
+      transition: opacity 1600ms ease, transform 11s ease;
+    }
+
+    .landscape img.visible { opacity: 1; transform: scale(1); }
+
+    .shade {
+      z-index: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(9, 18, 17, 0.48) 0%, rgba(9, 18, 17, 0.18) 55%, rgba(9, 18, 17, 0.1) 100%),
+        linear-gradient(180deg, rgba(9, 18, 17, 0.3) 0%, transparent 27%, transparent 49%, rgba(9, 18, 17, 0.54) 100%);
+    }
+
+    .topbar, .centerpiece, .bottom-area { position: relative; z-index: 1; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .wordmark {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink);
+      font: 600 13px/1 "Manrope", sans-serif;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+    }
+
+    .mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(248, 246, 239, 0.55);
+      border-radius: 50%;
+    }
+
+    .mark svg { width: 17px; height: 17px; }
+
+    .top-note {
+      color: rgba(248, 246, 239, 0.8);
+      font-size: 12px;
+      letter-spacing: 0.035em;
+    }
+
+    .centerpiece {
+      width: min(100%, 960px);
+      margin: auto 0;
+      padding: 95px 0 78px;
+      animation: arrive 1100ms both;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px 4px;
+      color: rgba(248, 246, 239, 0.82);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 840px;
+      margin: 0;
+      font: 400 clamp(48px, 7.6vw, 106px)/0.98 "Manrope", sans-serif;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    h1 span { color: #d7ddc4; }
+
+    .invitation {
+      margin: 24px 0 0 4px;
+      color: rgba(248, 246, 239, 0.84);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .bottom-area { display: grid; gap: 23px; }
+
+    .scene-caption {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 0 2px;
+    }
+
+    .scene-copy { min-width: 0; }
+
+    .scene-category {
+      margin: 0 0 7px;
+      color: rgba(248, 246, 239, 0.76);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.17em;
+      text-transform: uppercase;
+    }
+
+    .scene-title {
+      margin: 0;
+      font: 500 18px/1.3 "Manrope", sans-serif;
+    }
+
+    .scene-description {
+      margin: 5px 0 0;
+      color: var(--mist);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 66px;
+      padding: 10px 12px 10px 18px;
+      border: 1px solid rgba(248, 246, 239, 0.23);
+      border-radius: 8px;
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+    }
+
+    .control-group, .control-action, .auto-toggle, .filter-control {
+      display: flex;
+      align-items: center;
+    }
+
+    .control-group { gap: clamp(14px, 3vw, 36px); }
+
+    .filter-control { gap: 10px; }
+
+    .filter-control label {
+      color: rgba(248, 246, 239, 0.72);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    select {
+      max-width: 150px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    select option { background: #192520; color: var(--ink); }
+
+    .auto-toggle {
+      gap: 9px;
+      padding: 8px 0;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .switch {
+      position: relative;
+      width: 32px;
+      height: 18px;
+      border: 1px solid rgba(248, 246, 239, 0.48);
+      border-radius: 20px;
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+
+    .switch::after {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--ink);
+      content: "";
+      transition: transform 180ms ease;
+    }
+
+    .auto-toggle[aria-pressed="true"] .switch {
+      border-color: #d7ddc4;
+      background: #d7ddc4;
+    }
+
+    .auto-toggle[aria-pressed="true"] .switch::after {
+      background: #203029;
+      transform: translateX(14px);
+    }
+
+    .control-action {
+      justify-content: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 0 15px;
+      border: 1px solid rgba(248, 246, 239, 0.36);
+      border-radius: 5px;
+      background: rgba(248, 246, 239, 0.11);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 180ms ease, border-color 180ms ease;
+      white-space: nowrap;
+    }
+
+    .control-action:hover { border-color: rgba(248, 246, 239, 0.68); background: rgba(248, 246, 239, 0.2); }
+    .control-action:focus-visible, .auto-toggle:focus-visible, select:focus-visible { outline: 2px solid #d7ddc4; outline-offset: 4px; }
+    .control-action svg { width: 15px; height: 15px; }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (min-width: 1500px) {
+      .experience { padding-right: max(84px, calc((100vw - 1370px) / 2)); padding-left: max(84px, calc((100vw - 1370px) / 2)); }
+    }
+
+    @media (max-width: 650px) {
+      .experience { padding: 22px 20px 21px; }
+      .top-note { font-size: 11px; }
+      .centerpiece { padding: 75px 0 66px; }
+      .eyebrow { margin-bottom: 15px; font-size: 10px; }
+      h1 { font-size: clamp(49px, 13vw, 76px); }
+      .invitation { max-width: 280px; margin-top: 19px; font-size: 14px; }
+      .scene-caption { align-items: start; }
+      .scene-title { font-size: 16px; }
+      .scene-description { max-width: 280px; font-size: 12px; }
+      .controls { align-items: stretch; flex-direction: column; gap: 8px; padding: 12px; }
+      .control-group { justify-content: space-between; gap: 8px; padding: 0 3px 2px; }
+      .filter-control { gap: 7px; }
+      .filter-control label, select, .auto-toggle { font-size: 11px; }
+      select { max-width: 125px; }
+      .control-action { min-height: 44px; }
+      .shade { background: linear-gradient(90deg, rgba(9, 18, 17, 0.38), rgba(9, 18, 17, 0.08)), linear-gradient(180deg, rgba(9, 18, 17, 0.31), transparent 24%, rgba(9, 18, 17, 0.08) 43%, rgba(9, 18, 17, 0.68)); }
+    }
+
+    @media (max-width: 370px) {
+      .experience { padding-right: 16px; padding-left: 16px; }
+      .control-group { gap: 4px; }
+      .filter-control { gap: 4px; }
+      .filter-control label { font-size: 10px; }
+      select { max-width: 112px; font-size: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="experience">
+    <div class="landscape" aria-live="off">
+      <img class="visible" id="image-a" alt="">
+      <img id="image-b" alt="">
+    </div>
+    <div class="shade"></div>
+
+    <header class="topbar">
+      <a class="wordmark" href="#" aria-label="Still Somewhere home">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="currentColor" stroke-width="1.1"/><path d="M12 1.8v4.1M12 18.1v4.1M1.8 12h4.1m12.2 0h4.1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        </span>
+        <span>still somewhere</span>
+      </a>
+      <span class="top-note">A little room to breathe</span>
+    </header>
+
+    <section class="centerpiece" aria-labelledby="main-heading">
+      <p class="eyebrow">Somewhere quieter</p>
+      <h1 id="main-heading">Give your mind<br>somewhere to <span>rest.</span></h1>
+      <p class="invitation">Nothing to solve. Nowhere to go. Just be here for a moment.</p>
+    </section>
+
+    <section class="bottom-area" aria-label="Nature scene controls">
+      <div class="scene-caption" aria-live="polite">
+        <div class="scene-copy">
+          <p class="scene-category" id="scene-category">A quiet moment</p>
+          <h2 class="scene-title" id="scene-title">Finding a little stillness</h2>
+          <p class="scene-description" id="scene-description">Let your eyes wander. Take your time.</p>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="control-group">
+          <div class="filter-control">
+            <label for="scene-filter">Take me to</label>
+            <select id="scene-filter">
+              <option value="all">Anywhere</option>
+              <option value="night">Night sky</option>
+              <option value="mountains">Mountains</option>
+              <option value="hills">Hills &amp; lakes</option>
+              <option value="greenery">Greenery</option>
+              <option value="ocean">Ocean</option>
+            </select>
+          </div>
+          <button class="auto-toggle" id="auto-toggle" type="button" aria-pressed="true">
+            <span class="switch" aria-hidden="true"></span>
+            <span>Auto change</span>
+          </button>
+        </div>
+        <button class="control-action" id="next-scene" type="button">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16.3 6.4A6.7 6.7 0 1 0 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M13 3.5h3.7v3.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Find another view</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const scenes = [
+      { category: "night", label: "Night sky", title: "Beneath a sky full of stars", description: "A quiet mountain night, lit by a thousand distant worlds.", photo: "photo-1519681393784-d120267933ba" },
+      { category: "night", label: "Night sky", title: "Where the Milky Way begins", description: "A ribbon of light stretching across the stillness.", photo: "photo-1534796636912-3b95b3ab5986" },
+      { category: "night", label: "Night sky", title: "The universe, unhurried", description: "Far from the noise, the night opens up.", photo: "photo-1462331940025-496dfbfc7564" },
+      { category: "mountains", label: "Mountains", title: "The long way home", description: "Soft evening light settling over the ridgeline.", photo: "photo-1464822759023-fed622ff2c3b" },
+      { category: "mountains", label: "Mountains", title: "Above the clouds", description: "A little perspective from a quieter place.", photo: "photo-1500530855697-b586d89ba3ee" },
+      { category: "hills", label: "Hills & lakes", title: "Still water, softer light", description: "The mountains reflected back at themselves.", photo: "photo-1470770841072-f978cf4d019e" },
+      { category: "hills", label: "Hills & lakes", title: "A lake without a hurry", description: "Cool air, green hills, and nowhere else to be.", photo: "photo-1501785888041-af3ef285b470" },
+      { category: "greenery", label: "Greenery", title: "Into the quiet green", description: "Sunlight finds its way through the trees.", photo: "photo-1441974231531-c6227db76b6e" },
+      { category: "greenery", label: "Greenery", title: "A field at first light", description: "The day arriving gently, one breath at a time.", photo: "photo-1470252649378-9c29740c9fa8" },
+      { category: "greenery", label: "Greenery", title: "Follow the winding path", description: "A small trail through a very large world.", photo: "photo-1500534623283-312aade485b7" },
+      { category: "ocean", label: "Ocean", title: "The sea keeps its own time", description: "Waves coming in, waves going out. Nothing more.", photo: "photo-1507525428034-b723cf961d3e" },
+      { category: "ocean", label: "Ocean", title: "A horizon to rest on", description: "Blue water reaching toward the edge of the day.", photo: "photo-1518837695005-2083093ee35b" }
+    ];
+
+    const filter = document.querySelector("#scene-filter");
+    const autoToggle = document.querySelector("#auto-toggle");
+    const title = document.querySelector("#scene-title");
+    const category = document.querySelector("#scene-category");
+    const description = document.querySelector("#scene-description");
+    const images = [document.querySelector("#image-a"), document.querySelector("#image-b")];
+    let visibleIndex = 0;
+    let currentScene = null;
+    let autoChange = true;
+    let changeTimer;
+
+    function availableScenes() {
+      return scenes.filter((scene) => filter.value === "all" || scene.category === filter.value);
+    }
+
+    function scheduleChange() {
+      clearTimeout(changeTimer);
+      if (autoChange) {
+        changeTimer = setTimeout(showRandomScene, 40000 + Math.random() * 45000);
+      }
+    }
+
+    function showRandomScene() {
+      const choices = availableScenes().filter((scene) => scene !== currentScene);
+      const scene = choices[Math.floor(Math.random() * choices.length)] || currentScene || scenes[0];
+      const nextIndex = 1 - visibleIndex;
+      const nextImage = images[nextIndex];
+      const url = `https://images.unsplash.com/${scene.photo}?auto=format&fit=crop&w=2400&q=85`;
+
+      nextImage.onload = () => {
+        images[visibleIndex].classList.remove("visible");
+        nextImage.classList.add("visible");
+        visibleIndex = nextIndex;
+        currentScene = scene;
+        category.textContent = scene.label;
+        title.textContent = scene.title;
+        description.textContent = scene.description;
+        scheduleChange();
+      };
+      nextImage.onerror = () => {
+        nextImage.onload = null;
+        scheduleChange();
+      };
+      nextImage.src = url;
+      nextImage.alt = `${scene.label}: ${scene.description}`;
+    }
+
+    document.querySelector("#next-scene").addEventListener("click", showRandomScene);
+    filter.addEventListener("change", showRandomScene);
+    autoToggle.addEventListener("click", () => {
+      autoChange = !autoChange;
+      autoToggle.setAttribute("aria-pressed", String(autoChange));
+      scheduleChange();
+    });
+
+    showRandomScene();
+  </script>
+</body>
+</html>
