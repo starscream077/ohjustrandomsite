@@ -91,6 +91,14 @@
       pointer-events: auto;
     }
 
+    .experience.scene-info-visible:not(.interface-visible) .bottom-area {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: none;
+    }
+
+    .experience.scene-info-visible:not(.interface-visible) .controls { display: none; }
+
     .centerpiece.intro-dismissed {
       opacity: 0;
       visibility: hidden;
@@ -426,8 +434,6 @@
       clearTimeout(interfaceTimer);
       interfaceTimer = setTimeout(() => {
         experience.classList.remove("interface-visible");
-        experience.classList.remove("scene-info-visible");
-        sceneInfoToggle.setAttribute("aria-pressed", "false");
       }, 6000);
     }
 
@@ -468,7 +474,7 @@
     function scheduleChange() {
       clearTimeout(changeTimer);
       if (autoChange) {
-        changeTimer = setTimeout(showRandomScene, 40000 + Math.random() * 45000);
+        changeTimer = setTimeout(showRandomScene, 10000 + Math.random() * 5000);
       }
     }
 
